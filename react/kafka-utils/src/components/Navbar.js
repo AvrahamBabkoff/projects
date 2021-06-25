@@ -1,10 +1,21 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useRef } from 'react';
 import '../App.css';
 
 const Navbar = (props) => {
-  const bbb = (evt) => {
-    console.log(evt.target.id);
+  const bootstrapHost = useRef('kafka-kafka-brokers');
+  const bootstrapPort = useRef('9092');
+
+  const onSelectForm = (evt) => {
+    props.onSelect(evt.target.id);
+    // console.log(evt.target.id);
   };
+
+  const onGetTopicsHandler = () => {
+    console.log(bootstrapHost.current.value);
+    console.log(bootstrapPort.current.value);
+    props.onFetchTopics(bootstrapHost.current.value, bootstrapPort.current.value);
+  };
+
   const changeForm = (form) => {
     console.log(form);
   };
@@ -16,13 +27,17 @@ const Navbar = (props) => {
           <i className="fa fa-caret-down"></i>
         </button>
         <div className="dropdown-content">
-          <button id="consume_id" className="option" onClick={bbb}>
+          <button id="consume" className="option" onClick={onSelectForm}>
             Consume
           </button>
-          <button id="consume_multiple" className="option" onClick={bbb}>
+          <button
+            id="consume_multiple"
+            className="option"
+            onClick={onSelectForm}
+          >
             Consume Multiple
           </button>
-          <button id="diff_topics" className="option" onClick={bbb}>
+          <button id="diff_topics" className="option" onClick={onSelectForm}>
             dif topic
           </button>
         </div>
@@ -33,10 +48,10 @@ const Navbar = (props) => {
           <i className="fa fa-caret-down"></i>
         </button>
         <div className="dropdown-content">
-          <button id="produce" className="option" onClick={bbb}>
+          <button id="produce" className="option" onClick={onSelectForm}>
             Produce
           </button>
-          <button id = "produce_file" className="option" onClick={bbb}>
+          <button id="produce_file" className="option" onClick={onSelectForm}>
             Produce File
           </button>
         </div>
@@ -47,32 +62,42 @@ const Navbar = (props) => {
           <i className="fa fa-caret-down"></i>
         </button>
         <div className="dropdown-content">
-          <button id="create_topic" className="option" onClick={bbb}>
+          <button id="create_topic" className="option" onClick={onSelectForm}>
             Create Topic
           </button>
-          <button id="invalidate_topic" className="option" onClick={bbb}>
+          <button
+            id="invalidate_topic"
+            className="option"
+            onClick={onSelectForm}
+          >
             Invalidate Topic
           </button>
-          <button id="offset_topics" className="option" onClick={bbb}>
+          <button id="offset_topics" className="option" onClick={onSelectForm}>
             Get offset Per groupIds
           </button>
-          <button id="topic_to_es" className="option" onClick={bbb}>
+          <button id="topic_to_es" className="option" onClick={onSelectForm}>
             Produce topic to ES
           </button>
         </div>
       </div>
       <div className="boot">
         <label>host</label>
-        <input id="bootstrap-host" type="text" value="kafka-kafka-brokers" />
+        <input
+          id="bootstrap-host"
+          type="text"
+          ref={bootstrapHost}
+          defaultValue="kafka-kafka-brokers"
+        />
         <label>port</label>
         <input
           id="bootstrap-port"
           type="number"
-          value="9092"
-          maxlength="5"
-          minlength="4"
+          ref={bootstrapPort}
+          defaultValue="9092"
+          maxLength="5"
+          minLength="4"
         />
-        <button onclick="getTopics()"> fetch topics</button>
+        <button onClick={onGetTopicsHandler}> fetch topics</button>
       </div>
     </div>
   );

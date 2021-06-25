@@ -31,7 +31,8 @@ const InvalidateTopicForm = (props) => {
           </div>
         </div>
       </fieldset>
-      <input type="submit" onclick="invalidateTopic()" value="Apply" />
+      {/* <input type="submit" onclick="invalidateTopic()" value="Apply" /> */}
+      <input type="submit" value="Apply" />
     </div>
   );
 };

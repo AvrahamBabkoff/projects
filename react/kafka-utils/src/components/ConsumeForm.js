@@ -1,7 +1,23 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 import '../App.css';
 
 const ConsumeForm = (props) => {
+  const [dateFieldsDisabled, setDateFieldsState] = useState({
+    from: true,
+    to: true,
+  });
+
+  const toggleEnable = (field) => {
+    console.log(field);
+    setDateFieldsState((prev) => {
+      let newState = { ...prev };
+      newState[field] = !prev[field];
+      return newState;
+    });
+  };
+  const bbb = () => {};
+
+
   return (
     <div className="form-style-5" id="consume">
       <fieldset>
@@ -15,15 +31,22 @@ const ConsumeForm = (props) => {
 
         <label className="time">From Time</label>
         <label className="switch">
-          <input
+          {/* <input
             id="fromConsumerCheck"
             type="checkbox"
             onclick="toggleEnable('fromConsumerCheck','fromConsumer')"
+          /> */}
+
+          <input
+            id="fromConsumerCheck"
+            type="checkbox"
+            onChange={toggleEnable.bind(null, 'from')}
           />
+
           <span className="slider round"></span>
         </label>
         <input
-          disabled="true"
+          disabled={dateFieldsDisabled.from}
           data-date-format="yyyy/mm/dd"
           type="datetime-local"
           id="fromConsumer"
@@ -31,14 +54,21 @@ const ConsumeForm = (props) => {
 
         <label className="time">To Time</label>
         <label className="switch">
-          <input
+          {/* <input
             id="toConsumerCheck"
             type="checkbox"
             onclick="toggleEnable('toConsumerCheck','toConsumer')"
+          /> */}
+
+          <input
+            id="toConsumerCheck"
+            type="checkbox"
+            onClick={toggleEnable.bind(null, 'to')}
           />
+
           <span className="slider round"></span>
         </label>
-        <input disabled="true" type="datetime-local" id="toConsumer" />
+        <input disabled={dateFieldsDisabled.to} type="datetime-local" id="toConsumer" />
         <div className="input_fields_wrap" id="consumerRegexes">
           <div className="flexButtons">
             <label className="time">Regex List - </label>
@@ -49,11 +79,11 @@ const ConsumeForm = (props) => {
                 name="regexRelationSwitch"
                 className="regexRelationSwitch-checkbox"
                 id="regexRelationSwitch"
-                checked
+                defaultChecked={true}
               />
               <label
                 className="regexRelationSwitch-label"
-                for="regexRelationSwitch"
+                htmlFor="regexRelationSwitch"
               >
                 <span className="regexRelationSwitch-inner"></span>
                 <span className="regexRelationSwitch-switch"></span>
@@ -66,16 +96,21 @@ const ConsumeForm = (props) => {
             </label>
           </div>
           <div className="flexButtons">
-            <button
+            {/* <button
               className="add_field_button"
               onclick="addInputChild('consumerRegexes','consumerRegex')"
-            >
+            > */}
+            <button className="add_field_button" onClick={bbb}>
               Add Regex
             </button>
-            <button
+            {/* <button
               className="add_field_button"
               onclick="removeInputChild('consumerRegex')"
             >
+              Remove Regex
+            </button> */}
+
+            <button className="add_field_button" onClick={bbb}>
               Remove Regex
             </button>
           </div>
@@ -83,7 +118,7 @@ const ConsumeForm = (props) => {
             <input
               className="generalInput consumerRegex"
               type="text"
-              value=".*"
+              defaultValue=".*"
             />
           </div>
         </div>
@@ -98,7 +133,8 @@ const ConsumeForm = (props) => {
           <span className="slider round"></span>
         </label>
       </fieldset>
-      <input type="submit" onclick="consumerSubmit()" value="Apply" />
+      {/* <input type="submit" onclick="consumerSubmit()" value="Apply" /> */}
+      <input type="submit" value="Apply" />
     </div>
   );
 };
