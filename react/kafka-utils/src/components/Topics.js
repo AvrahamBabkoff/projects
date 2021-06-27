@@ -16,7 +16,7 @@ const Topics = (props) => {
         type="text"
         className="topicNameSearch topicsData"
         id="topicNameSearch"
-        onKeyUp={filterTable}
+        onChange={filterTable}
         placeholder="Search for topics.."
       />
       <table className="topics topicsData">

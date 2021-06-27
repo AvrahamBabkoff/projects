@@ -11,8 +11,8 @@ const Navbar = (props) => {
   };
 
   const onGetTopicsHandler = () => {
-    console.log(bootstrapHost.current.value);
-    console.log(bootstrapPort.current.value);
+    // console.log(bootstrapHost.current.value);
+    // console.log(bootstrapPort.current.value);
     props.onFetchTopics(bootstrapHost.current.value, bootstrapPort.current.value);
   };
 
