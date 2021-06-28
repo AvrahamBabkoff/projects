@@ -44,9 +44,34 @@ const invalidateTopic = async (data) => {
   return retVal;
 };
 
+const createTopic = async (data) => {
+  let retVal = false;
+  try {
+    const response = await fetch(
+      'http://localhost:9876/kafka/topics',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      }
+    );
+    if (!response.ok) {
+      throw new Error(response.statusText);
+    } else {
+      retVal = true;
+    }
+  } catch (e) {
+    await swal('Failed to create topic', e.message, 'error');
+  }
+  return retVal;
+};
+
 const Api = {
   fetchTopics,
-  invalidateTopic
+  invalidateTopic,
+  createTopic
 };
 
 export default Api;

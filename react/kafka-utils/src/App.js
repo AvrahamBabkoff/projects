@@ -29,54 +29,44 @@ function App() {
     setActiveForm(selectedForm);
   };
 
-  /*
-  const fetchTopicsHandler = async (bootstrapHost, bootstrapPort) => {
-    const btstrpsrv = `${bootstrapHost}:${bootstrapPort}`;
-    setBootstrapServer(btstrpsrv);
-    const params = new URLSearchParams({
-      bootstrapServer: btstrpsrv
-    });
-    // setIsLoading(true);
-    // const response = await fetch('http://localhost:3000/kafka/topics?bootstrapServer=kafka-kafka-brokers%3A9092', {
-    //   mode: 'no-cors'
-    // });
-    // const response = await fetch('http://localhost:3000/kafka/topics?bootstrapServer=kafka-kafka-brokers%3A9092');
-    const response = await fetch('http://localhost:9876/kafka/topics?' + params);
-    console.log(response);
-    const dt = await response.json();
-    setTopicsList(dt);
-  };
-*/
-  const fetchTopicsHandler = async (bootstrapHost, bootstrapPort) => {
-    const btstrpsrv = `${bootstrapHost}:${bootstrapPort}`;
-    setBootstrapServer(btstrpsrv);
+  const fetchTopics = async (btstrpsrv) => {
     const dt = await Api.fetchTopics(btstrpsrv);
     if (dt) {
       setTopicsList(dt);
     }
+
+  }
+  const fetchTopicsHandler = async (bootstrapHost, bootstrapPort) => {
+    const btstrpsrv = `${bootstrapHost}:${bootstrapPort}`;
+    setBootstrapServer(btstrpsrv);
+
+    await fetchTopics(btstrpsrv);
   };
 
   const invalidateTopicHandler = async (data) => {
     data.bootStrapServer = bootstrapServer;
-    // console.log(data);
     setActiveForm('');
     setSpinnerText('Invalidating topic');
     setShowSpinner(true);
     const res = await Api.invalidateTopic(data);
-    // const response = await fetch(
-    //   'http://localhost:9876/kafka/topics/invalidate',
-    //   {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify(data),
-    //   }
-    // );
-    setShowSpinner(false);
-    if(res) {
+    if (res) {
+      await fetchTopics(bootstrapServer);
       swal('Invalidated success', '', 'success');
     }
+    setShowSpinner(false);
+  };
+
+  const createTopicHandler = async (data) => {
+    data.bootStrapServer = bootstrapServer;
+    setActiveForm('');
+    setSpinnerText('Creating topic');
+    setShowSpinner(true);
+    const res = await Api.createTopic(data);
+    if (res) {
+      await fetchTopics(bootstrapServer);
+      swal('Topic created', '', 'success');
+    }
+    setShowSpinner(false);
   };
 
   return (
@@ -106,7 +96,9 @@ function App() {
       {activeForm === 'diff_topics' && <DiffTopicsForm />}
       {activeForm === 'produce' && <ProduceForm />}
       {activeForm === 'produce_file' && <ProduceFromFileForm />}
-      {activeForm === 'create_topic' && <CreateTopicForm />}
+      {activeForm === 'create_topic' && (
+        <CreateTopicForm onCreateTopic={createTopicHandler} />
+      )}
       {activeForm === 'invalidate_topic' && (
         <InvalidateTopicForm onInvalidate={invalidateTopicHandler} />
       )}

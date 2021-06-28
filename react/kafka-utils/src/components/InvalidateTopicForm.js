@@ -3,16 +3,22 @@ import swal from 'sweetalert';
 import '../App.css';
 
 const InvalidateTopicForm = (props) => {
+
+  // ref to topic input
   const topic = useRef('');
 
+  // state to hold array of groupid values
   const [consumerGroupIds, setConsumerGroupIds] = useState(['']);
 
+  
+  // calback for adding new groupid input
   const onAddConsumerGroupIdInputHandler = () => {
     setConsumerGroupIds((prevValue) => {
       return [...prevValue, ''];
     });
   };
 
+  // calback for removing last groupid input
   const onRemoveConsumerGroupIdHandler = () => {
     if (consumerGroupIds.length > 1) {
       setConsumerGroupIds((prevValue) => {
@@ -23,6 +29,7 @@ const InvalidateTopicForm = (props) => {
     }
   };
 
+  // callback for updating a groupid input
   const onConsumerGroupIdChangeHandler = (event) => {
     setConsumerGroupIds((prevValue) => {
       const newArr = [...prevValue];
@@ -31,7 +38,10 @@ const InvalidateTopicForm = (props) => {
     });
   };
 
+  // submit invalidate topic form
   const onSubmitForm = () => {
+
+    // set boolean indicating that all groupids have values
     let consumerGroupIdsValid = true;
     for (let i = 0; i < consumerGroupIds.length; i++) {
       if (consumerGroupIds[i].trim() === '') {
@@ -39,11 +49,13 @@ const InvalidateTopicForm = (props) => {
         break;
       }
     }
+    // check that a valid topic name was selected and that all groupids have values
     if (!topic.current.value || topic.current.value.trim() === '') {
       swal('Please set all options', 'Invalid topic', 'error');
     } else if (!consumerGroupIdsValid) {
       swal('Please set all options', 'Group id cannot be empty', 'error');
     } else {
+      // call parent
       props.onInvalidate({
         consumerGroupIds: consumerGroupIds,
         topicName: topic.current.value,
@@ -88,11 +100,9 @@ const InvalidateTopicForm = (props) => {
                 />
               );
             })}
-            {/* <input className="generalInput consumerId" type="text" /> */}
           </div>
         </div>
       </fieldset>
-      {/* <input type="submit" onclick="invalidateTopic()" value="Apply" /> */}
       <input type="submit" value="Apply" onClick={onSubmitForm} />
     </div>
   );
