@@ -1,13 +1,14 @@
 import React, { Fragment, useState, useRef } from 'react';
+import BaseForm from './BaseForm';
 import swal from 'sweetalert';
 import '../App.css';
 
 const CreateTopicForm = (props) => {
-  const topicToCreateRef = useRef('');
-  const maxMessageSizeRef = useRef('');
-  const numPartitionsRef = useRef('');
-  const replicationFactorRef = useRef('');
-  const retentionMsRef = useRef('');
+  const topicToCreateRef = useRef();
+  const maxMessageSizeRef = useRef();
+  const numPartitionsRef = useRef();
+  const replicationFactorRef = useRef();
+  const retentionMsRef = useRef();
 
 
   const onSubmitForm = () => {

@@ -46,11 +46,10 @@ function App() {
 
   const invalidateTopicHandler = async (data) => {
     data.bootStrapServer = bootstrapServer;
-    setActiveForm('');
     setSpinnerText('Invalidating topic');
     setProcessing(true);
-    // const res = await Api.invalidateTopic(data);
-    const res = await Api.postApi('topics/invalidate', data, 'invalidate topic');
+    const res = await Api.invalidateTopic(data);
+    //const res = await Api.postApi('topics/invalidate', data, 'invalidate topic');
     if (res) {
       await fetchTopics(bootstrapServer);
       swal('Invalidated success', '', 'success');
@@ -63,8 +62,8 @@ function App() {
     setActiveForm('');
     setSpinnerText('Creating topic');
     setProcessing(true);
-    //const res = await Api.createTopic(data);
-    const res = await Api.postApi('topics', data, 'create topic');
+    const res = await Api.createTopic(data);
+    //const res = await Api.postApi('topics', data, 'create topic');
     if (res) {
       await fetchTopics(bootstrapServer);
       swal('Topic created', '', 'success');
@@ -72,14 +71,6 @@ function App() {
     setProcessing(false);
   };
 
-  function wait(ms) {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        console.log("Done waiting");
-        resolve(ms)
-      }, ms )
-    })
-  }  
   
 
   const produceHandler = async (data) => {
@@ -88,11 +79,10 @@ function App() {
     }
     delete data.produceDefault;
 
-    //setActiveForm('');
     setSpinnerText('Producing msg');
     setProcessing(true);
-    const res = await Api.postApi('produce', data, 'produce message');
-    await wait(5000);
+    //const res = await Api.postApi('produce', data, 'produce message');
+    const res = await Api.produce(data);
     if (res) {
       swal('Message produced', '', 'success');
     }
@@ -130,7 +120,7 @@ function App() {
         <CreateTopicForm onCreateTopic={createTopicHandler} />
       )}
       {activeForm === 'invalidate_topic' && (
-        <InvalidateTopicForm onInvalidate={invalidateTopicHandler} />
+        <InvalidateTopicForm onInvalidate={invalidateTopicHandler} processing={processing}/>
       )}
       {activeForm === 'offset_topics' && <TopicOffsetForm />}
       {activeForm === 'topic_to_es' && <TopicToESForm />}

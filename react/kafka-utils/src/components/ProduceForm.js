@@ -48,7 +48,7 @@ const ProduceForm = (props) => {
           <input id="produceDefault" type="checkbox" ref={produdeDefaultRef} />
           <span className="slider round"></span>
         </label>
-        <label className="time toTheRight">produce as Hexadecimal</label>
+        <label className="time toTheRight">produce Hexadecimal</label>
         <label className="switch">
           <input
             id="produceHexadecimal"

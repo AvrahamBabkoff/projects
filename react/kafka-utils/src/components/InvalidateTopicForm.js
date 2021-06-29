@@ -1,16 +1,16 @@
 import React, { Fragment, useState, useRef } from 'react';
+import BaseForm from './BaseForm';
 import swal from 'sweetalert';
 import '../App.css';
 
 const InvalidateTopicForm = (props) => {
-
+  
   // ref to topic input
   const topic = useRef('');
 
   // state to hold array of groupid values
   const [consumerGroupIds, setConsumerGroupIds] = useState(['']);
 
-  
   // calback for adding new groupid input
   const onAddConsumerGroupIdInputHandler = () => {
     setConsumerGroupIds((prevValue) => {
@@ -18,7 +18,7 @@ const InvalidateTopicForm = (props) => {
     });
   };
 
-  // calback for removing last groupid input
+  // callback for removing last groupid input
   const onRemoveConsumerGroupIdHandler = () => {
     if (consumerGroupIds.length > 1) {
       setConsumerGroupIds((prevValue) => {
@@ -40,7 +40,6 @@ const InvalidateTopicForm = (props) => {
 
   // submit invalidate topic form
   const onSubmitForm = () => {
-
     // set boolean indicating that all groupids have values
     let consumerGroupIdsValid = true;
     for (let i = 0; i < consumerGroupIds.length; i++) {
@@ -64,7 +63,11 @@ const InvalidateTopicForm = (props) => {
   };
 
   return (
-    <div className="form-style-5" id="invalidateTopic">
+    <BaseForm
+      className="form-style-5"
+      id="invalidateTopic"
+      processing={props.processing}
+    >
       <fieldset>
         <legend>
           <span className="number">1</span> Invalidate Topic
@@ -104,7 +107,7 @@ const InvalidateTopicForm = (props) => {
         </div>
       </fieldset>
       <input type="submit" value="Apply" onClick={onSubmitForm} />
-    </div>
+    </BaseForm>
   );
 };
 

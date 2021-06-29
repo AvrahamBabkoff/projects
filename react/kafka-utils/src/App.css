@@ -1,5 +1,7 @@
 body {
   background-color: #e4ebfb;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  margin: 8px;
 }
 
 .navbar {
