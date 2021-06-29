@@ -20,7 +20,7 @@ function App() {
   const [spinnerText, setSpinnerText] = useState('');
   const [activeForm, setActiveForm] = useState('');
 
-  const [showSpinner, setShowSpinner] = useState(false);
+  const [processing, setProcessing] = useState(false);
 
   const [showConsumerResults, setShowConsumerResults] = useState(false);
   const [topicsList, setTopicsList] = useState([]);
@@ -36,6 +36,7 @@ function App() {
     }
 
   }
+
   const fetchTopicsHandler = async (bootstrapHost, bootstrapPort) => {
     const btstrpsrv = `${bootstrapHost}:${bootstrapPort}`;
     setBootstrapServer(btstrpsrv);
@@ -47,26 +48,55 @@ function App() {
     data.bootStrapServer = bootstrapServer;
     setActiveForm('');
     setSpinnerText('Invalidating topic');
-    setShowSpinner(true);
-    const res = await Api.invalidateTopic(data);
+    setProcessing(true);
+    // const res = await Api.invalidateTopic(data);
+    const res = await Api.postApi('topics/invalidate', data, 'invalidate topic');
     if (res) {
       await fetchTopics(bootstrapServer);
       swal('Invalidated success', '', 'success');
     }
-    setShowSpinner(false);
+    setProcessing(false);
   };
 
   const createTopicHandler = async (data) => {
     data.bootStrapServer = bootstrapServer;
     setActiveForm('');
     setSpinnerText('Creating topic');
-    setShowSpinner(true);
-    const res = await Api.createTopic(data);
+    setProcessing(true);
+    //const res = await Api.createTopic(data);
+    const res = await Api.postApi('topics', data, 'create topic');
     if (res) {
       await fetchTopics(bootstrapServer);
       swal('Topic created', '', 'success');
     }
-    setShowSpinner(false);
+    setProcessing(false);
+  };
+
+  function wait(ms) {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        console.log("Done waiting");
+        resolve(ms)
+      }, ms )
+    })
+  }  
+  
+
+  const produceHandler = async (data) => {
+    if(data.produceDefault) {
+      data.bootStrapServer = bootstrapServer;
+    }
+    delete data.produceDefault;
+
+    //setActiveForm('');
+    setSpinnerText('Producing msg');
+    setProcessing(true);
+    const res = await Api.postApi('produce', data, 'produce message');
+    await wait(5000);
+    if (res) {
+      swal('Message produced', '', 'success');
+    }
+    setProcessing(false);
   };
 
   return (
@@ -77,7 +107,7 @@ function App() {
       />
       <h3>Kafka 360°</h3>
       <Topics topics={topicsList} />
-      {showSpinner && (
+      {processing && (
         <div className="center" id="loading">
           <div className="spin-container">
             <div className="lds-hourglass"></div>
@@ -94,7 +124,7 @@ function App() {
       {activeForm === 'consume' && <ConsumeForm />}
       {activeForm === 'consume_multiple' && <ConsumeMultipleForm />}
       {activeForm === 'diff_topics' && <DiffTopicsForm />}
-      {activeForm === 'produce' && <ProduceForm />}
+      {activeForm === 'produce' && <ProduceForm onProduce={produceHandler} processing={processing}/>}
       {activeForm === 'produce_file' && <ProduceFromFileForm />}
       {activeForm === 'create_topic' && (
         <CreateTopicForm onCreateTopic={createTopicHandler} />

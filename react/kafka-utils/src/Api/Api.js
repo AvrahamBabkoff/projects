@@ -20,35 +20,13 @@ const fetchTopics = async (btstrpsrv) => {
   return dt;
 };
 
-const invalidateTopic = async (data) => {
-  let retVal = false;
-  try {
-    const response = await fetch(
-      'http://localhost:9876/kafka/topics/invalidate',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      }
-    );
-    if (!response.ok) {
-      throw new Error(response.statusText);
-    } else {
-      retVal = true;
-    }
-  } catch (e) {
-    await swal('Failed to invalidate topic', e.message, 'error');
-  }
-  return retVal;
-};
 
-const createTopic = async (data) => {
+
+const postApi = async (uri, data, action) => {
   let retVal = false;
   try {
     const response = await fetch(
-      'http://localhost:9876/kafka/topics',
+      'http://localhost:9876/kafka/' + uri,
       {
         method: 'POST',
         headers: {
@@ -63,15 +41,15 @@ const createTopic = async (data) => {
       retVal = true;
     }
   } catch (e) {
-    await swal('Failed to create topic', e.message, 'error');
+    await swal('Failed to ' + action, e.message, 'error');
   }
   return retVal;
+
 };
 
 const Api = {
   fetchTopics,
-  invalidateTopic,
-  createTopic
+  postApi
 };
 
 export default Api;
