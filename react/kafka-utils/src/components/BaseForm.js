@@ -1,5 +1,4 @@
-import React, { Fragment, useState, useRef } from 'react';
-import swal from 'sweetalert';
+import React from 'react';
 import '../App.css';
 
 const BaseForm = (props) => {

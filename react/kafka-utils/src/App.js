@@ -153,7 +153,7 @@ function App() {
   };
 
   return (
-    <React.Fragment>
+    <Fragment>
       <Navbar
         onSelect={onSelectFormHandler}
         onFetchTopics={fetchTopicsHandler}
@@ -203,7 +203,7 @@ function App() {
       <div className="version">
         <label className="versionLabel">Version 1.0.17</label>
       </div>
-    </React.Fragment>
+    </Fragment>
   );
 }
 

@@ -1,5 +1,6 @@
-import React, { Fragment, useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import BaseForm from './BaseForm';
+import MultiInput from './MultiInput';
 import swal from 'sweetalert';
 import '../App.css';
 
@@ -11,32 +12,10 @@ const InvalidateTopicForm = (props) => {
   // state to hold array of groupid values
   const [consumerGroupIds, setConsumerGroupIds] = useState(['']);
 
-  // calback for adding new groupid input
-  const onAddConsumerGroupIdInputHandler = () => {
-    setConsumerGroupIds((prevValue) => {
-      return [...prevValue, ''];
-    });
+  const onUpdateInputs = (inputs) => {
+    setConsumerGroupIds(inputs);
   };
 
-  // callback for removing last groupid input
-  const onRemoveConsumerGroupIdHandler = () => {
-    if (consumerGroupIds.length > 1) {
-      setConsumerGroupIds((prevValue) => {
-        const newArr = [...prevValue];
-        newArr.splice(-1, 1);
-        return newArr;
-      });
-    }
-  };
-
-  // callback for updating a groupid input
-  const onConsumerGroupIdChangeHandler = (event) => {
-    setConsumerGroupIds((prevValue) => {
-      const newArr = [...prevValue];
-      newArr[event.target.id] = event.target.value;
-      return newArr;
-    });
-  };
 
   // submit invalidate topic form
   const onSubmitForm = () => {
@@ -75,35 +54,13 @@ const InvalidateTopicForm = (props) => {
         <label>Topic Name</label>
         <input list="topicList" id="topicToInvalidate" ref={topic} />
         <div className="input_fields_wrap" id="groupIds">
-          <div>
-            <label className="time">Consumer group ids</label>
-            <button
-              className="add_field_button"
-              onClick={onAddConsumerGroupIdInputHandler}
-            >
-              Add group id
-            </button>
-            <button
-              className="add_field_button"
-              onClick={onRemoveConsumerGroupIdHandler}
-            >
-              Remove group id
-            </button>
-          </div>
-          <div>
-            {consumerGroupIds.map((input, i) => {
-              return (
-                <input
-                  id={i}
-                  className="generalInput consumerId"
-                  type="text"
-                  key={i}
-                  defaultValue={input}
-                  onChange={onConsumerGroupIdChangeHandler}
-                />
-              );
-            })}
-          </div>
+        <MultiInput
+            inputs={consumerGroupIds}
+            defaultInput=""
+            addButtonText="Add group id"
+            removeButtonText="Remove group id"
+            updateInputs={onUpdateInputs}
+          />
         </div>
       </fieldset>
       <input type="submit" value="Apply" onClick={onSubmitForm} />

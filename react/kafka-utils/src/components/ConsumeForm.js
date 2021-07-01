@@ -1,46 +1,22 @@
-import React, { Fragment, useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
+import MultiInput from './MultiInput';
 import '../App.css';
 
 const ConsumeForm = (props) => {
-
   // ref to topic input
   const topic = useRef('');
 
-  // state to hold array of groupid values
+  // state to hold array of regexp values
   const [regExps, setRegExps] = useState(['.*']);
 
-  // calback for adding new groupid input
-  const onAddRegExpInputHandler = () => {
-    setRegExps((prevValue) => {
-      return [...prevValue, ''];
-    });
-  };
-
-  // callback for removing last groupid input
-  const onRemoveRegExpHandler = () => {
-    if (regExps.length > 1) {
-      setRegExps((prevValue) => {
-        const newArr = [...prevValue];
-        newArr.splice(-1, 1);
-        return newArr;
-      });
-    }
-  };
-
-  // callback for updating a groupid input
-  const onRegExpChangeHandler = (event) => {
-    setRegExps((prevValue) => {
-      const newArr = [...prevValue];
-      newArr[event.target.id] = event.target.value;
-      return newArr;
-    });
+  const onUpdateInputs = (inputs) => {
+    setRegExps(inputs);
   };
 
   const [dateFieldsDisabled, setDateFieldsState] = useState({
     from: true,
     to: true,
   });
-
 
   const toggleEnable = (field) => {
     console.log(field);
@@ -50,8 +26,10 @@ const ConsumeForm = (props) => {
       return newState;
     });
   };
-  const bbb = () => {};
 
+  const onSubmitForm = () => {
+    console.log(regExps);
+  };
 
   return (
     <div className="form-style-5" id="consume">
@@ -66,12 +44,6 @@ const ConsumeForm = (props) => {
 
         <label className="time">From Time</label>
         <label className="switch">
-          {/* <input
-            id="fromConsumerCheck"
-            type="checkbox"
-            onclick="toggleEnable('fromConsumerCheck','fromConsumer')"
-          /> */}
-
           <input
             id="fromConsumerCheck"
             type="checkbox"
@@ -89,12 +61,6 @@ const ConsumeForm = (props) => {
 
         <label className="time">To Time</label>
         <label className="switch">
-          {/* <input
-            id="toConsumerCheck"
-            type="checkbox"
-            onclick="toggleEnable('toConsumerCheck','toConsumer')"
-          /> */}
-
           <input
             id="toConsumerCheck"
             type="checkbox"
@@ -103,7 +69,11 @@ const ConsumeForm = (props) => {
 
           <span className="slider round"></span>
         </label>
-        <input disabled={dateFieldsDisabled.to} type="datetime-local" id="toConsumer" />
+        <input
+          disabled={dateFieldsDisabled.to}
+          type="datetime-local"
+          id="toConsumer"
+        />
         <div className="input_fields_wrap" id="consumerRegexes">
           <div className="flexButtons">
             <label className="time">Regex List - </label>
@@ -130,45 +100,13 @@ const ConsumeForm = (props) => {
               <span className="slider round"></span>
             </label>
           </div>
-          <div className="flexButtons">
-            {/* <button
-              className="add_field_button"
-              onclick="addInputChild('consumerRegexes','consumerRegex')"
-            > */}
-            <button className="add_field_button" onClick={onAddRegExpInputHandler}>
-              Add Regex
-            </button>
-            {/* <button
-              className="add_field_button"
-              onclick="removeInputChild('consumerRegex')"
-            >
-              Remove Regex
-            </button> */}
-
-            <button className="add_field_button" onClick={onRemoveRegExpHandler}>
-              Remove Regex
-            </button>
-          </div>
-          <div>
-          {regExps.map((input, i) => {
-              return (
-                <input
-                  id={i}
-                  className="generalInput consumerRegex"
-                  type="text"
-                  key={i}
-                  defaultValue={input}
-                  onChange={onRegExpChangeHandler}
-                />
-              );
-            })}
-
-            {/* <input
-              className="generalInput consumerRegex"
-              type="text"
-              defaultValue=".*"
-            /> */}
-          </div>
+          <MultiInput
+            inputs={regExps}
+            defaultInput=""
+            addButtonText="Add Regex"
+            removeButtonText="Remove Regex"
+            updateInputs={onUpdateInputs}
+          />
         </div>
         <label className="time">Return as file</label>
         <label className="switch">
@@ -182,7 +120,7 @@ const ConsumeForm = (props) => {
         </label>
       </fieldset>
       {/* <input type="submit" onclick="consumerSubmit()" value="Apply" /> */}
-      <input type="submit" value="Apply" />
+      <input type="submit" value="Apply" onClick={onSubmitForm} />
     </div>
   );
 };

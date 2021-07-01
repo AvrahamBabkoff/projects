@@ -1,4 +1,4 @@
-import React, { Fragment, useRef } from 'react';
+import React, { useRef } from 'react';
 import '../App.css';
 
 const Navbar = (props) => {
@@ -16,9 +16,6 @@ const Navbar = (props) => {
     props.onFetchTopics(bootstrapHost.current.value, bootstrapPort.current.value);
   };
 
-  const changeForm = (form) => {
-    console.log(form);
-  };
   return (
     <div className="navbar">
       <div className="dropdown">

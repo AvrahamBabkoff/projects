@@ -1,39 +1,30 @@
-import React, { Fragment, useState, useRef } from 'react';
-import BaseForm from './BaseForm';
-import swal from 'sweetalert';
+import React, { Fragment } from 'react';
 import '../App.css';
 
 const MultiInput = (props) => {
-  // state to hold array of groupid values
-  const [inputs, setInputs] = useState([props.firstInput]);
 
-  // calback for adding new groupid input
+  // calback for adding new input
   const onAddInputHandler = () => {
-    setInputs((prevValue) => {
-      return [...prevValue, props.defaultInput];
-    });
+    const newInputs = [...props.inputs, props.defaultInput];
+    props.updateInputs(newInputs);
   };
 
-  // callback for removing last groupid input
+  // callback for removing last input
   const onRemoveInputHandler = () => {
-    if (inputs.length > 1) {
-      setInputs((prevValue) => {
-        const newArr = [...prevValue];
-        newArr.splice(-1, 1);
-        return newArr;
-      });
+    if (props.inputs.length > 1) {
+      const newInputs = [...props.inputs];
+      newInputs.splice(-1, 1);
+      props.updateInputs(newInputs);
     }
   };
 
   // callback for updating a groupid input
   const onInputChangeHandler = (event) => {
-    inputs((prevValue) => {
-      const newArr = [...prevValue];
-      newArr[event.target.id] = event.target.value;
-      props.updateInputs([...newArr]);
-      return newArr;
-    });
+    const newInputs = [...props.inputs];
+    newInputs[event.target.id] = event.target.value;
+    props.updateInputs(newInputs);
   };
+
 
   return (
     <Fragment>
@@ -47,7 +38,7 @@ const MultiInput = (props) => {
         </button>
       </div>
       <div>
-        {inputs.map((input, i) => {
+        {props.inputs.map((input, i) => {
           return (
             <input
               id={i}
