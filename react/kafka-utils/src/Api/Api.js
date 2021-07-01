@@ -1,10 +1,11 @@
 import swal from 'sweetalert';
 
-const postApi = async (uri, data, action) => {
+const postApi = async (uri, data, action, parameters) => {
   let retVal = false;
+  const params = parameters ? '?' + new URLSearchParams(parameters) : '';
   try {
     const response = await fetch(
-      'http://localhost:9876/kafka/' + uri,
+      'http://localhost:9876/kafka/' + uri + params,
       {
         method: 'POST',
         headers: {
@@ -57,12 +58,18 @@ const produce = async (data) => {
   return await postApi('produce', data, 'produce message');
 };
 
+// currently we send control data as query params, need to make it part of the body
+const produceFile = async (parameters, data, multiLine) => {
+  const uri = (multiLine ? 'multiLineFile/produce' : 'file/produce');
+  return await postApi(uri, data, 'produce file', parameters);
+};
 
 const Api = {
   fetchTopics,
   invalidateTopic,
   createTopic,
-  produce
+  produce,
+  produceFile
 };
 
 export default Api;

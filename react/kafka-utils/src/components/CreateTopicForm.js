@@ -10,7 +10,6 @@ const CreateTopicForm = (props) => {
   const replicationFactorRef = useRef();
   const retentionMsRef = useRef();
 
-
   const onSubmitForm = () => {
     const topicName = topicToCreateRef.current.value.trim();
     const maxMassageSize = maxMessageSizeRef.current.value.trim();
@@ -38,7 +37,11 @@ const CreateTopicForm = (props) => {
   };
 
   return (
-    <div className="form-style-5" id="creatTopic">
+    <BaseForm
+      className="form-style-5"
+      id="creatTopic"
+      processing={props.processing}
+    >
       <fieldset>
         <legend>
           <span className="number">1</span> Create Topic
@@ -80,7 +83,7 @@ const CreateTopicForm = (props) => {
         />
       </fieldset>
       <input type="submit" onClick={onSubmitForm} value="Apply" />
-    </div>
+    </BaseForm>
   );
 };
 

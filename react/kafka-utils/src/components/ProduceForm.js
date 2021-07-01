@@ -1,4 +1,5 @@
 import React, { Fragment, useRef } from 'react';
+import BaseForm from './BaseForm';
 import swal from 'sweetalert';
 import '../App.css';
 
@@ -8,8 +9,7 @@ const ProduceForm = (props) => {
   const produdeDefaultRef = useRef();
   const produceHexadecimalRef = useRef();
 
-  const display=(props.processing ? {display: 'none'}: {display: 'block'});
-
+  
   const onSubmitForm = () => {
     const topicName = topicNameRef.current.value.trim();
     const message = stringToProduceRef.current.value.trim();
@@ -29,7 +29,11 @@ const ProduceForm = (props) => {
     }
   };
   return (
-    <div className="form-style-5" id="producer" style={display}>
+    <BaseForm
+      className="form-style-5"
+      id="producer"
+      processing={props.processing}
+    >
       <fieldset>
         <legend>
           <span className="number">1</span> Produce
@@ -59,7 +63,7 @@ const ProduceForm = (props) => {
         </label>
       </fieldset>
       <input type="submit" onClick={onSubmitForm} value="Apply" />
-    </div>
+    </BaseForm>
   );
 };
 

@@ -1,11 +1,46 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useRef } from 'react';
 import '../App.css';
 
 const ConsumeForm = (props) => {
+
+  // ref to topic input
+  const topic = useRef('');
+
+  // state to hold array of groupid values
+  const [regExps, setRegExps] = useState(['.*']);
+
+  // calback for adding new groupid input
+  const onAddRegExpInputHandler = () => {
+    setRegExps((prevValue) => {
+      return [...prevValue, ''];
+    });
+  };
+
+  // callback for removing last groupid input
+  const onRemoveRegExpHandler = () => {
+    if (regExps.length > 1) {
+      setRegExps((prevValue) => {
+        const newArr = [...prevValue];
+        newArr.splice(-1, 1);
+        return newArr;
+      });
+    }
+  };
+
+  // callback for updating a groupid input
+  const onRegExpChangeHandler = (event) => {
+    setRegExps((prevValue) => {
+      const newArr = [...prevValue];
+      newArr[event.target.id] = event.target.value;
+      return newArr;
+    });
+  };
+
   const [dateFieldsDisabled, setDateFieldsState] = useState({
     from: true,
     to: true,
   });
+
 
   const toggleEnable = (field) => {
     console.log(field);
@@ -100,7 +135,7 @@ const ConsumeForm = (props) => {
               className="add_field_button"
               onclick="addInputChild('consumerRegexes','consumerRegex')"
             > */}
-            <button className="add_field_button" onClick={bbb}>
+            <button className="add_field_button" onClick={onAddRegExpInputHandler}>
               Add Regex
             </button>
             {/* <button
@@ -110,16 +145,29 @@ const ConsumeForm = (props) => {
               Remove Regex
             </button> */}
 
-            <button className="add_field_button" onClick={bbb}>
+            <button className="add_field_button" onClick={onRemoveRegExpHandler}>
               Remove Regex
             </button>
           </div>
           <div>
-            <input
+          {regExps.map((input, i) => {
+              return (
+                <input
+                  id={i}
+                  className="generalInput consumerRegex"
+                  type="text"
+                  key={i}
+                  defaultValue={input}
+                  onChange={onRegExpChangeHandler}
+                />
+              );
+            })}
+
+            {/* <input
               className="generalInput consumerRegex"
               type="text"
               defaultValue=".*"
-            />
+            /> */}
           </div>
         </div>
         <label className="time">Return as file</label>

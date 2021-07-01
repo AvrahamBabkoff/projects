@@ -16,6 +16,9 @@ import TopicToESForm from './components/TopicToESForm';
 
 import './App.css';
 
+const slice_size = 100 * 1024;
+
+
 function App() {
   const [spinnerText, setSpinnerText] = useState('');
   const [activeForm, setActiveForm] = useState('');
@@ -34,8 +37,7 @@ function App() {
     if (dt) {
       setTopicsList(dt);
     }
-
-  }
+  };
 
   const fetchTopicsHandler = async (bootstrapHost, bootstrapPort) => {
     const btstrpsrv = `${bootstrapHost}:${bootstrapPort}`;
@@ -59,7 +61,7 @@ function App() {
 
   const createTopicHandler = async (data) => {
     data.bootStrapServer = bootstrapServer;
-    setActiveForm('');
+    // setActiveForm('');
     setSpinnerText('Creating topic');
     setProcessing(true);
     const res = await Api.createTopic(data);
@@ -71,10 +73,8 @@ function App() {
     setProcessing(false);
   };
 
-  
-
   const produceHandler = async (data) => {
-    if(data.produceDefault) {
+    if (data.produceDefault) {
       data.bootStrapServer = bootstrapServer;
     }
     delete data.produceDefault;
@@ -85,6 +85,69 @@ function App() {
     const res = await Api.produce(data);
     if (res) {
       swal('Message produced', '', 'success');
+    }
+    setProcessing(false);
+  };
+
+  const getNextChunk = async (reader, file, current_position, slice_size) => {
+    let result = new Promise((resolve, reject) => {
+      const slc = file.slice(
+        current_position,
+        current_position + slice_size + 1
+      );
+      reader.onloadend = (event) => {
+        if (event.target.readyState !== FileReader.DONE) {
+          return;
+        }
+        resolve(event.target.result.split(',')[1]);
+      };
+      reader.readAsDataURL(slc);
+    });
+    return result;
+  };
+
+  const produceFileHandler = async (data) => {
+    let res;
+    setSpinnerText('Producing file');
+    setProcessing(true);
+    const fileId = Math.random()
+      .toString(36)
+      .replace(/[^a-z]+/g, '')
+      .substr(0, 7);
+    let current_position = 0;
+    const reader = new FileReader();
+    const parameters = {
+      topic: data.topicName,
+      hexadecimal: data.hexadecimal,
+    };
+    if (data.produceDefault) {
+      parameters.bootStrapServer = bootstrapServer;
+    }
+    if (data.sleepMS !== undefined) {
+      parameters.sleepInMilliseconds = data.sleepMS;
+    }
+    while (current_position < data.fileToProduce.size) {
+      const chunk = await getNextChunk(
+        reader,
+        data.fileToProduce,
+        current_position,
+        slice_size
+      );
+
+      const body = {
+        doneSending: current_position + slice_size >= data.fileToProduce.size,
+        fileUID: fileId,
+        fileData: chunk,
+      };
+      res = await Api.produceFile(parameters, body);
+      if (res) {
+        current_position += slice_size + 1;
+      } else {
+        break;
+      }
+    }
+    if (res) {
+      swal('File produced', '', 'success');
     }
     setProcessing(false);
   };
@@ -114,13 +177,26 @@ function App() {
       {activeForm === 'consume' && <ConsumeForm />}
       {activeForm === 'consume_multiple' && <ConsumeMultipleForm />}
       {activeForm === 'diff_topics' && <DiffTopicsForm />}
-      {activeForm === 'produce' && <ProduceForm onProduce={produceHandler} processing={processing}/>}
-      {activeForm === 'produce_file' && <ProduceFromFileForm />}
+      {activeForm === 'produce' && (
+        <ProduceForm onProduce={produceHandler} processing={processing} />
+      )}
+      {activeForm === 'produce_file' && (
+        <ProduceFromFileForm
+          onProduceFile={produceFileHandler}
+          processing={processing}
+        />
+      )}
       {activeForm === 'create_topic' && (
-        <CreateTopicForm onCreateTopic={createTopicHandler} />
+        <CreateTopicForm
+          onCreateTopic={createTopicHandler}
+          processing={processing}
+        />
       )}
       {activeForm === 'invalidate_topic' && (
-        <InvalidateTopicForm onInvalidate={invalidateTopicHandler} processing={processing}/>
+        <InvalidateTopicForm
+          onInvalidate={invalidateTopicHandler}
+          processing={processing}
+        />
       )}
       {activeForm === 'offset_topics' && <TopicOffsetForm />}
       {activeForm === 'topic_to_es' && <TopicToESForm />}
