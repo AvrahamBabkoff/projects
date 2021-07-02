@@ -18,7 +18,6 @@ import './App.css';
 
 const slice_size = 100 * 1024;
 
-
 function App() {
   const [spinnerText, setSpinnerText] = useState('');
   const [activeForm, setActiveForm] = useState('');
@@ -85,6 +84,36 @@ function App() {
     const res = await Api.produce(data);
     if (res) {
       swal('Message produced', '', 'success');
+    }
+    setProcessing(false);
+  };
+
+  const consumeHandler = async (data) => {
+    console.log(data);
+    data.bootStrapServer = bootstrapServer;
+    const asFile = data.asFile;
+    delete data.asFile;
+    setSpinnerText('Consuming topic ' + data.topicName);
+    setProcessing(true);
+    const dt = await Api.consume(data, asFile);
+    console.log(dt);
+    if (asFile) {
+      const url = window.URL.createObjectURL(new Blob([dt]));
+      const link = document.createElement('a');
+      link.href = url;
+      const filename = 'consume_' + data.topicName + '.json';
+      link.setAttribute('download', filename);
+
+      // Append to html link element page
+      document.body.appendChild(link);
+
+      // Start download
+      link.click();
+
+      // Clean up and remove the link
+      link.parentNode.removeChild(link);
+    } else {
+      
     }
     setProcessing(false);
   };
@@ -174,7 +203,9 @@ function App() {
           return <option key={topic.topicName} value={topic.topicName} />;
         })}
       </datalist>
-      {activeForm === 'consume' && <ConsumeForm />}
+      {activeForm === 'consume' && (
+        <ConsumeForm onConsume={consumeHandler} processing={processing} />
+      )}
       {activeForm === 'consume_multiple' && <ConsumeMultipleForm />}
       {activeForm === 'diff_topics' && <DiffTopicsForm />}
       {activeForm === 'produce' && (
