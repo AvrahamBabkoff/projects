@@ -6,33 +6,33 @@ const ResponseType = {
 	BLOB: "blob"
 };
 
-const postApi = async (uri, data, action, parameters) => {
-  let retVal = false;
-  const params = parameters ? '?' + new URLSearchParams(parameters) : '';
-  try {
-    const response = await fetch(
-      'http://localhost:9876/kafka/' + uri + params,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      }
-    );
-    if (!response.ok) {
-      throw new Error(response.statusText);
-    } else {
-      retVal = true;
-    }
-  } catch (e) {
-    await swal('Failed to ' + action, e.message, 'error');
-  }
-  return retVal;
+// const postApi = async (uri, data, action, parameters) => {
+//   let retVal = false;
+//   const params = parameters ? '?' + new URLSearchParams(parameters) : '';
+//   try {
+//     const response = await fetch(
+//       'http://localhost:9876/kafka/' + uri + params,
+//       {
+//         method: 'POST',
+//         headers: {
+//           'Content-Type': 'application/json',
+//         },
+//         body: JSON.stringify(data),
+//       }
+//     );
+//     if (!response.ok) {
+//       throw new Error(response.statusText);
+//     } else {
+//       retVal = true;
+//     }
+//   } catch (e) {
+//     await swal('Failed to ' + action, e.message, 'error');
+//   }
+//   return retVal;
 
-};
+// };
 
-const postApiEx = async (responseType, uri, data, action, parameters) => {
+const postApi = async (responseType, uri, data, action, parameters) => {
   let retVal;
   const params = parameters ? '?' + new URLSearchParams(parameters) : '';
   try {
@@ -89,27 +89,27 @@ const fetchTopics = async (btstrpsrv) => {
 };
 
 const invalidateTopic = async (data) => {
-  return await postApiEx(ResponseType.RESULT, 'topics/invalidate', data, 'invalidate topic');
+  return await postApi(ResponseType.RESULT, 'topics/invalidate', data, 'invalidate topic');
 };
 
 const createTopic = async (data) => {
-  return await postApiEx(ResponseType.RESULT, 'topics', data, 'create topic');
+  return await postApi(ResponseType.RESULT, 'topics', data, 'create topic');
 };
 
 const produce = async (data) => {
-  return await postApiEx(ResponseType.RESULT, 'produce', data, 'produce message');
+  return await postApi(ResponseType.RESULT, 'produce', data, 'produce message');
 };
 
 // currently we send control data as query params, need to make it part of the body
 const produceFile = async (parameters, data, multiLine) => {
   const uri = (multiLine ? 'multiLineFile/produce' : 'file/produce');
-  return await postApiEx(ResponseType.RESULT, uri, data, 'produce file', parameters);
+  return await postApi(ResponseType.RESULT, uri, data, 'produce file', parameters);
 };
 
 const consume = async (data, asFile) => {
   const uri = (asFile ? 'consume/file' : 'consume');
   const resType = (asFile ? ResponseType.BLOB : ResponseType.JSON);
-  return await postApiEx(resType, uri, data, 'consume from topic ' + data.topicName);
+  return await postApi(resType, uri, data, 'consume from topic ' + data.topicName);
 };
 
 const Api = {

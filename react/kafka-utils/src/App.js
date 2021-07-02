@@ -27,7 +27,9 @@ function App() {
   const [showConsumerResults, setShowConsumerResults] = useState(false);
   const [topicsList, setTopicsList] = useState([]);
   const [bootstrapServer, setBootstrapServer] = useState('');
+  const [consumerResults, setConsumerResults] = useState({});
   const onSelectFormHandler = (selectedForm) => {
+    setShowConsumerResults(false);
     setActiveForm(selectedForm);
   };
 
@@ -89,14 +91,14 @@ function App() {
   };
 
   const consumeHandler = async (data) => {
-    console.log(data);
+    // console.log(data);
     data.bootStrapServer = bootstrapServer;
     const asFile = data.asFile;
     delete data.asFile;
     setSpinnerText('Consuming topic ' + data.topicName);
     setProcessing(true);
     const dt = await Api.consume(data, asFile);
-    console.log(dt);
+    // console.log(dt);
     if (asFile) {
       const url = window.URL.createObjectURL(new Blob([dt]));
       const link = document.createElement('a');
@@ -113,9 +115,12 @@ function App() {
       // Clean up and remove the link
       link.parentNode.removeChild(link);
     } else {
-      
+      dt.topicName = data.topicName;
+      setConsumerResults(dt);
     }
+    setActiveForm('');
     setProcessing(false);
+    setShowConsumerResults(true);
   };
 
   const getNextChunk = async (reader, file, current_position, slice_size) => {
@@ -197,7 +202,7 @@ function App() {
           <h2 id="spinText">{spinnerText}</h2>
         </div>
       )}
-      {showConsumerResults && <ConsumeResults />}
+      {showConsumerResults && <ConsumeResults results={consumerResults}/>}
       <datalist className="topicList" id="topicList">
         {topicsList.map((topic) => {
           return <option key={topic.topicName} value={topic.topicName} />;

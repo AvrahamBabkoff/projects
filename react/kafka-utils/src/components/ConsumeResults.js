@@ -2,16 +2,25 @@ import React from 'react';
 import '../App.css';
 
 const ConsumeResults = (props) => {
+
+  console.log('in ConsumeResults');
+  console.log(props.results);
   return (
       <div className="resultDiv" id="consumerResult">
         <table className="topics topicCounter" id="topicsCounterTable">
           <thead>
             <tr>
               <th id="topicCounterTitle">Topic Name</th>
-              <th id="topicCounterDesc"></th>
+              <th id="topicCounterDesc">Number Of Messages</th>
             </tr>
           </thead>
-          <tbody id="topicsCounter"></tbody>
+          <tbody id="topicsCounter">
+            <tr>
+              <td>{props.results.topicName}</td>
+              <td>{props.results.numOfMassages}</td>
+            </tr>
+          </tbody>
+
         </table>
         <div className="flexResults">
           <table className="jsonResult" id="consumerResultTable">
