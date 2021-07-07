@@ -45,7 +45,6 @@ const ConsumeResults = (props) => {
     }
   };
 
-
   if (props.results.massages.length > 0) {
     console.log(
       JSON.stringify(props.results.massages[previewRow].message, undefined, 4)
@@ -67,36 +66,30 @@ const ConsumeResults = (props) => {
   }
 
   const messagesToDisplay = props.results.massages
-  .map((message, i) => {
-    return {
-      message,
-      formattedmessage: JSON.stringify(message.message),
-      key: i,
-    };
-  })
-  .filter((message) => {
-    return (
-      message.formattedmessage
-        .toUpperCase()
-        .indexOf(filter.toUpperCase()) > -1
-
-      // JSON.stringify(message.message)
-      //   .toUpperCase()
-      //   .indexOf(filter.toUpperCase()) > -1
-    );
-  })
-  .sort(sortMessages)
-  .map((message) => {
-    return (
-      <tr key={message.key}>
-        <td>{message.message.time}</td>
-        {/* <td>{JSON.stringify(message.message)}</td> */}
-        <td onClick={onPreview.bind(null, message.key)}>
-          {message.formattedmessage}
-        </td>
-      </tr>
-    );
-  });
+    .map((message, i) => {
+      return {
+        message,
+        formattedmessage: JSON.stringify(message.message),
+        key: i,
+      };
+    })
+    .filter((message) => {
+      return (
+        message.formattedmessage.toUpperCase().indexOf(filter.toUpperCase()) >
+        -1
+      );
+    })
+    .sort(sortMessages)
+    .map((message) => {
+      return (
+        <tr key={message.key}>
+          <td>{message.message.time}</td>
+          <td onClick={onPreview.bind(null, message.key)}>
+            {message.formattedmessage}
+          </td>
+        </tr>
+      );
+    });
 
   return (
     <div className="resultDiv" id="consumerResult">
@@ -107,32 +100,11 @@ const ConsumeResults = (props) => {
             <th id="topicCounterDesc">{props.results.topicValueHeader}</th>
           </tr>
         </thead>
-        <tbody id="topicsCounter">
-          {topicsAggs}
-          {/* {props.results.topicsAggs.map((agg) => {
-            return (
-              <tr>
-                <td>{agg.topicName}</td>
-                <td>{agg.value}</td>
-              </tr>
-            );
-          })} */}
-        </tbody>
+        <tbody id="topicsCounter">{topicsAggs}</tbody>
       </table>
       <div className="flexResults">
         <table className="jsonResult" id="consumerResultTable">
-          {/* <thead style={{display: 'block'}}> */}
           <thead>
-            {/* <tr> */}
-            {/* <button>⇑/⇓</button> */}
-            {/* <button onclick="sort('results')">⇑/⇓</button> */}
-            {/* <input
-                type="text"
-                id="messageFilter"
-                onChange={filterTable}
-                placeholder="Filter messages..."
-              ></input> */}
-            {/* </tr> */}
             <tr>
               <th className="first">
                 Time<button onClick={toggleSortOrder}>⇑/⇓</button>
@@ -148,10 +120,7 @@ const ConsumeResults = (props) => {
               </th>
             </tr>
           </thead>
-          {/* <tbody id="results" style={messagesToDisplay.length > 0 ? {display : 'contents', height: '100%'} : {}}> */}
-          <tbody id="results">
-            {messagesToDisplay}
-          </tbody>
+          <tbody id="results">{messagesToDisplay}</tbody>
         </table>
 
         <table className="preview">
@@ -165,15 +134,12 @@ const ConsumeResults = (props) => {
           <tbody id="previewBody">
             <tr>
               <td id="resultsPreview">
-                {
-                  props.results.massages.length > 0 &&
-                    JSON.stringify(
-                      props.results.massages[previewRow].message,
-                      undefined,
-                      4
-                    )
-                  // JSON.stringify(props.results.massages[previewRow].message.message, undefined, 4)
-                }
+                {props.results.massages.length > 0 &&
+                  JSON.stringify(
+                    props.results.massages[previewRow].message,
+                    undefined,
+                    4
+                  )}
               </td>
             </tr>
           </tbody>
