@@ -415,6 +415,13 @@ table.topics tbody, .jsonResult tbody, .preview tbody {
   background: #f4f7f8;
 }
 
+/* #results {
+  display: contents;
+} */
+table.jsonResult thead {
+  display: block;
+}
+
 .flexResults {
   display: flex;
   width: 900px;
@@ -445,7 +452,10 @@ table.topics tbody, .jsonResult tbody, .preview tbody {
 
 
 .jsonResult tr:nth-child(even) {
-  background-color: #d0e4f5
+  background-color: #d0e4f5;
+}
+.jsonResult tr:nth-child(odd) {
+  background-color: white;
 }
 
 .jsonResult th, .preview th {

@@ -23,12 +23,14 @@ function App() {
   const [activeForm, setActiveForm] = useState('');
 
   const [processing, setProcessing] = useState(false);
+  const [hideForm, setHideForm] = useState(false);
 
   const [showConsumerResults, setShowConsumerResults] = useState(false);
   const [topicsList, setTopicsList] = useState([]);
   const [bootstrapServer, setBootstrapServer] = useState('');
   const [consumerResults, setConsumerResults] = useState({});
   const onSelectFormHandler = (selectedForm) => {
+    setHideForm(false);
     setShowConsumerResults(false);
     setActiveForm(selectedForm);
   };
@@ -115,10 +117,42 @@ function App() {
       // Clean up and remove the link
       link.parentNode.removeChild(link);
     } else {
-      dt.topicName = data.topicName;
+      dt.topicValueHeader = 'Number Of Messages';
+      dt.topicsAggs = {};
+      dt.topicsAggs[data.topicName] = dt.numOfMassages;
       setConsumerResults(dt);
     }
-    setActiveForm('');
+    // setActiveForm('');
+    setHideForm(true);
+    setProcessing(false);
+    setShowConsumerResults(true);
+  };
+
+  const ConsumeMultipleHandler = async (data) => {
+    data.bootStrapServer = bootstrapServer;
+    setSpinnerText('Consuming multiple topic ' + data.topicsNames.toString());
+    setProcessing(true);
+    const dt = await Api.consumeMultiple(data);
+    const aggs = {};
+    const messages = [];
+    const res = {};
+
+    console.log('topics names', data.topicsNames);
+    for (let i = 0; i < data.topicsNames.length; ++i) {
+      console.log(data.topicsNames[i]);
+      aggs[data.topicsNames[i]] = false;
+    }
+    console.log('aggs 1', aggs);
+    dt.forEach((elem) => {
+      console.log('elem', elem);
+      messages.push(elem.massage);
+      aggs[elem.topicName] = true;
+    });
+    res.topicValueHeader = 'Was message found';
+    res.topicsAggs = aggs;
+    res.massages = messages;
+    setConsumerResults(res);
+    setHideForm(true);
     setProcessing(false);
     setShowConsumerResults(true);
   };
@@ -202,16 +236,25 @@ function App() {
           <h2 id="spinText">{spinnerText}</h2>
         </div>
       )}
-      {showConsumerResults && <ConsumeResults results={consumerResults}/>}
+      {showConsumerResults && <ConsumeResults results={consumerResults} />}
       <datalist className="topicList" id="topicList">
         {topicsList.map((topic) => {
           return <option key={topic.topicName} value={topic.topicName} />;
         })}
       </datalist>
       {activeForm === 'consume' && (
-        <ConsumeForm onConsume={consumeHandler} processing={processing} />
+        <ConsumeForm
+          onConsume={consumeHandler}
+          processing={processing || hideForm}
+        />
       )}
-      {activeForm === 'consume_multiple' && <ConsumeMultipleForm />}
+      {activeForm === 'consume_multiple' && (
+        <ConsumeMultipleForm
+          topics={topicsList}
+          onConsumeMultiple={ConsumeMultipleHandler}
+          processing={processing || hideForm}
+        />
+      )}
       {activeForm === 'diff_topics' && <DiffTopicsForm />}
       {activeForm === 'produce' && (
         <ProduceForm onProduce={produceHandler} processing={processing} />

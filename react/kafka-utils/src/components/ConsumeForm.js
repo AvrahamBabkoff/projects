@@ -11,7 +11,7 @@ const escapeRegExp = (string) => {
 const ConsumeForm = (props) => {
   // ref to topic input
   const topicNameRef = useRef();
-  const maxMessageseRef = useRef();
+  const maxMessagesRef = useRef();
   const fromRef = useRef();
   const toRef = useRef();
   const andOrRef = useRef();
@@ -32,7 +32,6 @@ const ConsumeForm = (props) => {
   });
 
   const toggleEnable = (field) => {
-    console.log(field);
     setDateFieldsState((prev) => {
       let newState = { ...prev };
       newState[field] = !prev[field];
@@ -104,21 +103,20 @@ const ConsumeForm = (props) => {
       if (toEpoch > 0) {
         data.toTime = toEpoch;
       }
-      const maxMessagese = maxMessageseRef.current.value.trim();
+      const maxMessages = maxMessagesRef.current.value.trim();
 
       if (
-        maxMessagese.length > 0 &&
-        !isNaN(maxMessagese) &&
-        +maxMessagese >= 0
+        maxMessages.length > 0 &&
+        !isNaN(maxMessages) &&
+        +maxMessages >= 0
       ) {
-        data.maxMessagese = maxMessagese;
+        data.maxMassages = maxMessages;
       }
       if (!andOrRef.current.checked) {
         data.regexRelations = 'OR';
       }
       data.hexadecimal = hexadecimalRef.current.checked;
       data.asFile = returnAsFileRef.current.checked;
-      //console.log(data);
       props.onConsume(data);
     }
   };
@@ -136,7 +134,7 @@ const ConsumeForm = (props) => {
         <label>Topic Name</label>
         <input list="topicList" id="cTopicName" ref={topicNameRef} />
         <label>Max Massages - Optional</label>
-        <input type="number" id="cMaxMassages" ref={maxMessageseRef} />
+        <input type="number" id="cMaxMassages" ref={maxMessagesRef} />
 
         <label className="time">From Time</label>
         <label className="switch">

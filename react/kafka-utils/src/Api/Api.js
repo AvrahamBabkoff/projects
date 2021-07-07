@@ -112,13 +112,19 @@ const consume = async (data, asFile) => {
   return await postApi(resType, uri, data, 'consume from topic ' + data.topicName);
 };
 
+const consumeMultiple = async (data) => {
+  return await postApi(ResponseType.JSON, 'consume/multiple', data, 'consume from multiple topics ' + data.topicsNames.toString());
+};
+
+
 const Api = {
   fetchTopics,
   invalidateTopic,
   createTopic,
   produce,
   produceFile,
-  consume
+  consume,
+  consumeMultiple
 };
 
 export default Api;
