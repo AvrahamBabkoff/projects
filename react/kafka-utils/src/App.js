@@ -121,16 +121,18 @@ function App() {
 
       // Clean up and remove the link
       link.parentNode.removeChild(link);
+      swal('Download complete', '', 'success');
     } else {
       dt.topicValueHeader = 'Number Of Messages';
       dt.topicsAggs = {};
       dt.topicsAggs[data.topicName] = dt.numOfMassages;
       setConsumerResults(dt);
+      setHideForm(true);
+      // setProcessing(false);
+      setShowConsumerResults(true);
     }
     // setActiveForm('');
-    setHideForm(true);
     setProcessing(false);
-    setShowConsumerResults(true);
   };
 
   const ConsumeMultipleHandler = async (data) => {
@@ -264,6 +266,7 @@ function App() {
 
         // Clean up and remove the link
         link.parentNode.removeChild(link);
+        swal('Download complete', '', 'success');
       } else {
         const res = {};
         res.topicValueHeader = 'Number Of Messages';
@@ -274,12 +277,13 @@ function App() {
 
         setConsumerResults(res);
         setHideForm(true);
-        setProcessing(false);
+        // setProcessing(false);
         setShowConsumerResults(true);
       }
     } else {
-      setProcessing(false);
+      // setProcessing(false);
     }
+    setProcessing(false);
     // setActiveForm('');
   };
 
