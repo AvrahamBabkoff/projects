@@ -45,20 +45,11 @@ const ConsumeResults = (props) => {
     }
   };
 
-  if (props.results.massages.length > 0) {
-    console.log(
-      JSON.stringify(props.results.massages[previewRow].message, undefined, 4)
-    );
-  } else {
-    console.log(props.results);
-    console.log('array is empty!!!!!!');
-  }
-  console.log(props.results);
   const topicsAggs = [];
 
   for (const topicName in props.results.topicsAggs) {
     topicsAggs.push(
-      <tr>
+      <tr key={topicName}>
         <td>{topicName}</td>
         <td>{props.results.topicsAggs[topicName].toString()}</td>
       </tr>

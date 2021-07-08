@@ -36,17 +36,22 @@ function App() {
   };
 
   const fetchTopics = async (btstrpsrv) => {
+    let res = false;
     const dt = await Api.fetchTopics(btstrpsrv);
     if (dt) {
+      res = true;
       setTopicsList(dt);
     }
+    return res;
   };
 
   const fetchTopicsHandler = async (bootstrapHost, bootstrapPort) => {
     const btstrpsrv = `${bootstrapHost}:${bootstrapPort}`;
-    setBootstrapServer(btstrpsrv);
-
-    await fetchTopics(btstrpsrv);
+    setBootstrapServer('');
+    const res = await fetchTopics(btstrpsrv);
+    if (res) {
+      setBootstrapServer(btstrpsrv);
+    }
   };
 
   const invalidateTopicHandler = async (data) => {
@@ -220,11 +225,70 @@ function App() {
     setProcessing(false);
   };
 
+  const produceToESHandler = async (data) => {
+    data.bootStrapServer = bootstrapServer;
+    setSpinnerText('Producing topic to es');
+    setProcessing(true);
+    const res = await Api.produceToEs(data);
+    if (res && res.length > 0) {
+      swal('Produce to es succeeded', 'New index: ' + res, 'success');
+    }
+    setProcessing(false);
+  };
+
+  const diffTopicsHandler = async (data) => {
+    data.bootStrapServer = bootstrapServer;
+    const asFile = data.asFile;
+    delete data.asFile;
+    setSpinnerText(
+      'Creating diff between ' + data.topicNameIn + ' and ' + data.topicNameOut
+    );
+    setProcessing(true);
+    const dt = await Api.diffTopics(data, asFile);
+
+    if (dt) {
+      // console.log(dt);
+      if (asFile) {
+        const url = window.URL.createObjectURL(new Blob([dt]));
+        const link = document.createElement('a');
+        link.href = url;
+        const filename =
+          'dif_' + data.topicNameIn + '_' + data.topicNameOut + '.json';
+        link.setAttribute('download', filename);
+
+        // Append to html link element page
+        document.body.appendChild(link);
+
+        // Start download
+        link.click();
+
+        // Clean up and remove the link
+        link.parentNode.removeChild(link);
+      } else {
+        const res = {};
+        res.topicValueHeader = 'Number Of Messages';
+        res.topicsAggs = {};
+        res.topicsAggs[data.topicNameIn] = dt.numOfMassagesIn;
+        res.topicsAggs[data.topicNameOut] = dt.numOfMassagesOut;
+        res.massages = dt.diffList;
+
+        setConsumerResults(res);
+        setHideForm(true);
+        setProcessing(false);
+        setShowConsumerResults(true);
+      }
+    } else {
+      setProcessing(false);
+    }
+    // setActiveForm('');
+  };
+
   return (
     <Fragment>
       <Navbar
         onSelect={onSelectFormHandler}
         onFetchTopics={fetchTopicsHandler}
+        initialized={bootstrapServer && bootstrapServer.length > 0}
       />
       <h3>Kafka 360°</h3>
       <Topics topics={topicsList} />
@@ -255,7 +319,12 @@ function App() {
           processing={processing || hideForm}
         />
       )}
-      {activeForm === 'diff_topics' && <DiffTopicsForm />}
+      {activeForm === 'diff_topics' && (
+        <DiffTopicsForm
+          onDiffTopics={diffTopicsHandler}
+          processing={processing || hideForm}
+        />
+      )}
       {activeForm === 'produce' && (
         <ProduceForm onProduce={produceHandler} processing={processing} />
       )}
@@ -278,7 +347,12 @@ function App() {
         />
       )}
       {activeForm === 'offset_topics' && <TopicOffsetForm />}
-      {activeForm === 'topic_to_es' && <TopicToESForm />}
+      {activeForm === 'topic_to_es' && (
+        <TopicToESForm
+          onProduceToEs={produceToESHandler}
+          processing={processing}
+        />
+      )}
       <div className="version">
         <label className="versionLabel">Version 1.0.17</label>
       </div>
