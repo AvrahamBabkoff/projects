@@ -4,7 +4,7 @@ import MultiInput from './MultiInput';
 import swal from 'sweetalert';
 import '../App.css';
 
-const InvalidateTopicForm = (props) => {
+const ActionOnTopicForm = (props) => {
   
   // ref to topic input
   const topic = useRef('');
@@ -34,7 +34,7 @@ const InvalidateTopicForm = (props) => {
       swal('Please set all options', 'Group id cannot be empty', 'error');
     } else {
       // call parent
-      props.onInvalidate({
+      props.onAction({
         consumerGroupIds: consumerGroupIds,
         topicName: topic.current.value,
       });
@@ -49,7 +49,7 @@ const InvalidateTopicForm = (props) => {
     >
       <fieldset>
         <legend>
-          <span className="number">1</span> Invalidate Topic
+          <span className="number">1</span>{props.title}
         </legend>
         <label>Topic Name</label>
         <input list="topicList" id="topicToInvalidate" ref={topic} />
@@ -68,4 +68,4 @@ const InvalidateTopicForm = (props) => {
   );
 };
 
-export default InvalidateTopicForm;
+export default ActionOnTopicForm;

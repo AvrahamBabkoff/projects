@@ -10,7 +10,7 @@ import DiffTopicsForm from './components/DiffTopicsForm';
 import ProduceForm from './components/ProduceForm';
 import ProduceFromFileForm from './components/ProduceFromFileForm';
 import CreateTopicForm from './components/CreateTopicForm';
-import InvalidateTopicForm from './components/InvalidateTopicForm';
+import ActionOnTopicForm from './components/ActionOnTopicForm';
 import TopicOffsetForm from './components/TopicOffsetForm';
 import TopicToESForm from './components/TopicToESForm';
 
@@ -66,6 +66,46 @@ function App() {
     }
     setProcessing(false);
   };
+
+
+
+
+
+
+
+
+
+
+
+
+  const topicOffsetsHandler = async (data) => {
+    data.bootStrapServer = bootstrapServer;
+    setSpinnerText('topic offsets for ' + data.topicName);
+    setProcessing(true);
+    const dt = await Api.topicOffsets(data);
+    console.log(dt);
+    //const res = await Api.postApi('topics/invalidate', data, 'invalidate topic');
+    // if (res) {
+    //   await fetchTopics(bootstrapServer);
+    //   swal('Invalidated success', '', 'success');
+    // }
+    setProcessing(false);
+  };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   const createTopicHandler = async (data) => {
     data.bootStrapServer = bootstrapServer;
@@ -345,12 +385,19 @@ function App() {
         />
       )}
       {activeForm === 'invalidate_topic' && (
-        <InvalidateTopicForm
-          onInvalidate={invalidateTopicHandler}
+        <ActionOnTopicForm
+          title=" Invalidate Topic"
+          onAction={invalidateTopicHandler}
           processing={processing}
         />
       )}
-      {activeForm === 'offset_topics' && <TopicOffsetForm />}
+      {activeForm === 'offset_topics' && (
+        <ActionOnTopicForm
+          title="Get offset Per groupIds"
+          onAction={topicOffsetsHandler}
+          processing={processing}
+        />
+      )}
       {activeForm === 'topic_to_es' && (
         <TopicToESForm
           onProduceToEs={produceToESHandler}

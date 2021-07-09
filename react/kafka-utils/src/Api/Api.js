@@ -160,6 +160,17 @@ const diffTopics = async (data, asFile) => {
   );
 };
 
+
+const topicOffsets = async (data) => {
+  return await postApi(
+    ResponseType.JSON,
+    'topics/offset',
+    data,
+    'topic offsets for ' + data.topicName
+  );
+};
+
+
 const Api = {
   fetchTopics,
   invalidateTopic,
@@ -169,7 +180,8 @@ const Api = {
   consume,
   consumeMultiple,
   produceToEs,
-  diffTopics
+  diffTopics,
+  topicOffsets
 };
 
 export default Api;
