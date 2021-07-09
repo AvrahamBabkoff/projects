@@ -45,16 +45,25 @@ const ConsumeResults = (props) => {
     }
   };
 
-  const topicsAggs = [];
-
-  for (const topicName in props.results.topicsAggs) {
-    topicsAggs.push(
-      <tr key={topicName}>
-        <td>{topicName}</td>
-        <td>{props.results.topicsAggs[topicName].toString()}</td>
+  const topicsAggs = props.results.topicsAggs.map((element) => {
+    return (
+      <tr key={element.left}>
+        <td>{element.left}</td>
+        <td>{element.right.toString()}</td>
       </tr>
     );
-  }
+  });
+
+  // const topicsAggs = [];
+
+  // for (const topicName in props.results.topicsAggs) {
+  //   topicsAggs.push(
+  //     <tr key={topicName}>
+  //       <td>{topicName}</td>
+  //       <td>{props.results.topicsAggs[topicName].toString()}</td>
+  //     </tr>
+  //   );
+  // }
 
   const messagesToDisplay = props.results.massages
     .map((message, i) => {
@@ -82,18 +91,24 @@ const ConsumeResults = (props) => {
       );
     });
 
+  const displayMessages = props.results.massages.length === 0 ? { display: 'none' } : {};
+
   return (
     <div className="resultDiv" id="consumerResult">
       <table className="topics topicCounter" id="topicsCounterTable">
         <thead>
           <tr>
-            <th id="topicCounterTitle">Topic Name</th>
+            <th id="topicCounterTitle">
+              {props.results.topicNameHeader
+                ? props.results.topicNameHeader
+                : 'Topic Name'}
+            </th>
             <th id="topicCounterDesc">{props.results.topicValueHeader}</th>
           </tr>
         </thead>
         <tbody id="topicsCounter">{topicsAggs}</tbody>
       </table>
-      <div className="flexResults">
+      <div className="flexResults" style={displayMessages}>
         <table className="jsonResult" id="consumerResultTable">
           <thead>
             <tr>

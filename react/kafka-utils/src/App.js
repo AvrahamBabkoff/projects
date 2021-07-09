@@ -67,45 +67,39 @@ function App() {
     setProcessing(false);
   };
 
-
-
-
-
-
-
-
-
-
-
-
   const topicOffsetsHandler = async (data) => {
     data.bootStrapServer = bootstrapServer;
     setSpinnerText('topic offsets for ' + data.topicName);
     setProcessing(true);
     const dt = await Api.topicOffsets(data);
+    const res = {};
     console.log(dt);
+    const aggs = [];
+    for(let i =0; i < dt.length; i++){
+      for (const offset in dt[i].partitionToOffset) {
+        const groupId = (dt[i].groupId ? dt[i].groupId : '{current}')
+        aggs.push({
+          left: `${groupId}.${offset}`,
+          right: dt[i].partitionToOffset[offset]
+        });
+      }
+    }
+    res.topicValueHeader = 'Offset';
+    res.topicNameHeader = `${data.topicName} - Partitions`;
+    res.massages =[];
+    res.topicsAggs = aggs;
+    console.log(aggs);
     //const res = await Api.postApi('topics/invalidate', data, 'invalidate topic');
     // if (res) {
     //   await fetchTopics(bootstrapServer);
     //   swal('Invalidated success', '', 'success');
     // }
+    setConsumerResults(res);
+    setHideForm(true);
+    // setProcessing(false);
+    setShowConsumerResults(true);
     setProcessing(false);
   };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   const createTopicHandler = async (data) => {
     data.bootStrapServer = bootstrapServer;
@@ -164,8 +158,11 @@ function App() {
       swal('Download complete', '', 'success');
     } else {
       dt.topicValueHeader = 'Number Of Messages';
-      dt.topicsAggs = {};
-      dt.topicsAggs[data.topicName] = dt.numOfMassages;
+      dt.topicsAggs = [];
+      dt.topicsAggs.push({
+        left: data.topicName,
+        right: dt.numOfMassages,
+      });
       setConsumerResults(dt);
       setHideForm(true);
       // setProcessing(false);
@@ -180,21 +177,37 @@ function App() {
     setSpinnerText('Consuming multiple topic ' + data.topicsNames.toString());
     setProcessing(true);
     const dt = await Api.consumeMultiple(data);
-    const aggs = {};
+    const aggsSet = {};
+    const aggs = [];
     const messages = [];
     const res = {};
 
     console.log('topics names', data.topicsNames);
     for (let i = 0; i < data.topicsNames.length; ++i) {
       console.log(data.topicsNames[i]);
-      aggs[data.topicsNames[i]] = false;
+      aggsSet[data.topicsNames[i]] = false;
+      // aggs.push({
+      //   left: data.topicsNames[i],
+      //   right: false
+      // });
     }
     console.log('aggs 1', aggs);
     dt.forEach((elem) => {
       console.log('elem', elem);
       messages.push(elem.massage);
-      aggs[elem.topicName] = true;
+      aggsSet[elem.topicName] = true;
+      // aggs.push({
+      //   left: elem.topicName,
+      //   right: true
+      // });
     });
+    for (const prop in aggsSet) {
+      aggs.push({
+        left: prop,
+        right: aggsSet[prop],
+      });
+    }
+
     res.topicValueHeader = 'Was message found';
     res.topicsAggs = aggs;
     res.massages = messages;
@@ -310,9 +323,17 @@ function App() {
       } else {
         const res = {};
         res.topicValueHeader = 'Number Of Messages';
-        res.topicsAggs = {};
-        res.topicsAggs[data.topicNameIn] = dt.numOfMassagesIn;
-        res.topicsAggs[data.topicNameOut] = dt.numOfMassagesOut;
+        res.topicsAggs = [];
+        res.topicsAggs.push({
+          left: data.topicNameIn,
+          right: dt.numOfMassagesIn,
+        });
+        res.topicsAggs.push({
+          left: data.topicNameOut,
+          right: dt.numOfMassagesOut,
+        });
+        // res.topicsAggs[data.topicNameIn] = dt.numOfMassagesIn;
+        // res.topicsAggs[data.topicNameOut] = dt.numOfMassagesOut;
         res.massages = dt.diffList;
 
         setConsumerResults(res);
@@ -395,7 +416,7 @@ function App() {
         <ActionOnTopicForm
           title="Get offset Per groupIds"
           onAction={topicOffsetsHandler}
-          processing={processing}
+          processing={processing || hideForm}
         />
       )}
       {activeForm === 'topic_to_es' && (
