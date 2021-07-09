@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import BaseForm from './BaseForm';
 import swal from 'sweetalert';
-import '../App.css';
+import '../../App.css';
 
 const DiffTopicsForm = (props) => {
   const inTopicNameRef = useRef();

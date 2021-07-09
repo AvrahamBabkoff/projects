@@ -1,5 +1,5 @@
 import React from 'react';
-import '../App.css';
+import '../../App.css';
 
 const BaseForm = (props) => {
   const display = props.processing ? { display: 'none' } : { display: 'block' };

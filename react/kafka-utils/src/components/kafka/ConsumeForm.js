@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import MultiInput from './MultiInput';
 import BaseForm from './BaseForm';
 import swal from 'sweetalert';
-import '../App.css';
+import '../../App.css';
 
 const escapeRegExp = (string) => {
   return string.replace(/[.*+?^${}()|[\]\\/]/g, '\\$&'); // $& means the whole matched string

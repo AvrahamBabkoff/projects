@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import swal from 'sweetalert';
-import '../App.css';
+import '../../App.css';
 
 const ConsumeResults = (props) => {
   const [filter, setFilter] = useState('');

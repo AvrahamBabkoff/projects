@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import BaseForm from './BaseForm';
 import MultiInput from './MultiInput';
 import swal from 'sweetalert';
-import '../App.css';
+import '../../App.css';
 
 const ActionOnTopicForm = (props) => {
   

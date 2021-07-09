@@ -1,18 +1,18 @@
 import React, { Fragment, useState } from 'react';
 import swal from 'sweetalert';
 import Api from './Api/Api';
-import Navbar from './components/Navbar';
-import Topics from './components/Topics';
-import ConsumeResults from './components/ConsumeResults';
-import ConsumeForm from './components/ConsumeForm';
-import ConsumeMultipleForm from './components/ConsumeMultipeForm';
-import DiffTopicsForm from './components/DiffTopicsForm';
-import ProduceForm from './components/ProduceForm';
-import ProduceFromFileForm from './components/ProduceFromFileForm';
-import CreateTopicForm from './components/CreateTopicForm';
-import ActionOnTopicForm from './components/ActionOnTopicForm';
-import TopicOffsetForm from './components/TopicOffsetForm';
-import TopicToESForm from './components/TopicToESForm';
+import Navbar from './components/kafka/Navbar';
+import Topics from './components/kafka/Topics';
+import ConsumeResults from './components/kafka/ConsumeResults';
+import ConsumeForm from './components/kafka/ConsumeForm';
+import ConsumeMultipleForm from './components/kafka/ConsumeMultipeForm';
+import DiffTopicsForm from './components/kafka/DiffTopicsForm';
+import ProduceForm from './components/kafka/ProduceForm';
+import ProduceFromFileForm from './components/kafka/ProduceFromFileForm';
+import CreateTopicForm from './components/kafka/CreateTopicForm';
+import ActionOnTopicForm from './components/kafka/ActionOnTopicForm';
+// import TopicOffsetForm from './components/TopicOffsetForm';
+import TopicToESForm from './components/kafka/TopicToESForm';
 
 import './App.css';
 
@@ -75,18 +75,18 @@ function App() {
     const res = {};
     console.log(dt);
     const aggs = [];
-    for(let i =0; i < dt.length; i++){
+    for (let i = 0; i < dt.length; i++) {
       for (const offset in dt[i].partitionToOffset) {
-        const groupId = (dt[i].groupId ? dt[i].groupId : '{current}')
+        const groupId = dt[i].groupId ? dt[i].groupId : '{current}';
         aggs.push({
           left: `${groupId}.${offset}`,
-          right: dt[i].partitionToOffset[offset]
+          right: dt[i].partitionToOffset[offset],
         });
       }
     }
     res.topicValueHeader = 'Offset';
     res.topicNameHeader = `${data.topicName} - Partitions`;
-    res.massages =[];
+    res.massages = [];
     res.topicsAggs = aggs;
     console.log(aggs);
     //const res = await Api.postApi('topics/invalidate', data, 'invalidate topic');
@@ -267,7 +267,7 @@ function App() {
         fileUID: fileId,
         fileData: chunk,
       };
-      res = await Api.produceFile(parameters, body);
+      res = await Api.produceFile(parameters, body, data.multiLine);
       if (res) {
         current_position += slice_size + 1;
       } else {
@@ -347,86 +347,116 @@ function App() {
     setProcessing(false);
     // setActiveForm('');
   };
+  const openNav = () => {
+    document.getElementById('mySidebar').style.width = '250px';
+    document.getElementById('main').style.marginLeft = '250px';
+  };
+
+  const closeNav = () => {
+    document.getElementById('mySidebar').style.width = '0';
+    document.getElementById('main').style.marginLeft = '0';
+  };
+
+  const toggleNav = () => {
+    console.log(document.getElementById('mySidebar').style.width);
+    let w = document.getElementById('mySidebar').style.width;
+    if (w && w === '250px') {
+      closeNav();
+    } else {
+      openNav();
+    }
+  };
 
   return (
     <Fragment>
-      <Navbar
-        onSelect={onSelectFormHandler}
-        onFetchTopics={fetchTopicsHandler}
-        initialized={bootstrapServer && bootstrapServer.length > 0}
-      />
-      <h3>Kafka 360°</h3>
-      <Topics topics={topicsList} />
-      {processing && (
-        <div className="center" id="loading">
-          <div className="spin-container">
-            <div className="lds-hourglass"></div>
+      <div id="mySidebar" className="sidebar">
+        <a href="#">About</a>
+        <a href="#">Services</a>
+        <a href="#">Clients</a>
+        <a href="#">Contact</a>
+      </div>
+      <div id="main">
+        <button className="openbtn" onClick={toggleNav}>
+          ☰
+        </button>
+        <Navbar
+          onSelect={onSelectFormHandler}
+          onFetchTopics={fetchTopicsHandler}
+          initialized={bootstrapServer && bootstrapServer.length > 0}
+        />
+        <h3>Kafka 360°</h3>
+        <Topics topics={topicsList} />
+        {processing && (
+          <div className="center" id="loading">
+            <div className="spin-container">
+              <div className="lds-hourglass"></div>
+            </div>
+            <h2 id="spinText">{spinnerText}</h2>
           </div>
-          <h2 id="spinText">{spinnerText}</h2>
+        )}
+        {showConsumerResults && <ConsumeResults results={consumerResults} />}
+        <datalist className="topicList" id="topicList">
+          {topicsList.map((topic) => {
+            return <option key={topic.topicName} value={topic.topicName} />;
+          })}
+        </datalist>
+        {activeForm === 'consume' && (
+          <ConsumeForm
+            onConsume={consumeHandler}
+            processing={processing || hideForm}
+          />
+        )}
+        {activeForm === 'consume_multiple' && (
+          <ConsumeMultipleForm
+            topics={topicsList}
+            onConsumeMultiple={ConsumeMultipleHandler}
+            processing={processing || hideForm}
+          />
+        )}
+        {activeForm === 'diff_topics' && (
+          <DiffTopicsForm
+            onDiffTopics={diffTopicsHandler}
+            processing={processing || hideForm}
+          />
+        )}
+        {activeForm === 'produce' && (
+          <ProduceForm onProduce={produceHandler} processing={processing} />
+        )}
+        {activeForm === 'produce_file' && (
+          <ProduceFromFileForm
+            onProduceFile={produceFileHandler}
+            processing={processing}
+          />
+        )}
+        {activeForm === 'create_topic' && (
+          <CreateTopicForm
+            onCreateTopic={createTopicHandler}
+            processing={processing}
+          />
+        )}
+        {activeForm === 'invalidate_topic' && (
+          <ActionOnTopicForm
+            title=" Invalidate Topic"
+            onAction={invalidateTopicHandler}
+            processing={processing}
+          />
+        )}
+        {activeForm === 'offset_topics' && (
+          <ActionOnTopicForm
+            title="Get offset Per groupIds"
+            onAction={topicOffsetsHandler}
+            processing={processing || hideForm}
+          />
+        )}
+        {activeForm === 'topic_to_es' && (
+          <TopicToESForm
+            onProduceToEs={produceToESHandler}
+            processing={processing}
+          />
+        )}
+        <div className="version">
+          <label className="versionLabel">Version 1.0.17</label>
         </div>
-      )}
-      {showConsumerResults && <ConsumeResults results={consumerResults} />}
-      <datalist className="topicList" id="topicList">
-        {topicsList.map((topic) => {
-          return <option key={topic.topicName} value={topic.topicName} />;
-        })}
-      </datalist>
-      {activeForm === 'consume' && (
-        <ConsumeForm
-          onConsume={consumeHandler}
-          processing={processing || hideForm}
-        />
-      )}
-      {activeForm === 'consume_multiple' && (
-        <ConsumeMultipleForm
-          topics={topicsList}
-          onConsumeMultiple={ConsumeMultipleHandler}
-          processing={processing || hideForm}
-        />
-      )}
-      {activeForm === 'diff_topics' && (
-        <DiffTopicsForm
-          onDiffTopics={diffTopicsHandler}
-          processing={processing || hideForm}
-        />
-      )}
-      {activeForm === 'produce' && (
-        <ProduceForm onProduce={produceHandler} processing={processing} />
-      )}
-      {activeForm === 'produce_file' && (
-        <ProduceFromFileForm
-          onProduceFile={produceFileHandler}
-          processing={processing}
-        />
-      )}
-      {activeForm === 'create_topic' && (
-        <CreateTopicForm
-          onCreateTopic={createTopicHandler}
-          processing={processing}
-        />
-      )}
-      {activeForm === 'invalidate_topic' && (
-        <ActionOnTopicForm
-          title=" Invalidate Topic"
-          onAction={invalidateTopicHandler}
-          processing={processing}
-        />
-      )}
-      {activeForm === 'offset_topics' && (
-        <ActionOnTopicForm
-          title="Get offset Per groupIds"
-          onAction={topicOffsetsHandler}
-          processing={processing || hideForm}
-        />
-      )}
-      {activeForm === 'topic_to_es' && (
-        <TopicToESForm
-          onProduceToEs={produceToESHandler}
-          processing={processing}
-        />
-      )}
-      <div className="version">
-        <label className="versionLabel">Version 1.0.17</label>
       </div>
     </Fragment>
   );
