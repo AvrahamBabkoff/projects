@@ -1,10 +1,10 @@
 import React, { Fragment, useState, useRef } from 'react';
 import AceEditor from 'react-ace';
 import 'ace-builds/src-noconflict/mode-json';
-import Api from './Api/Api';
-import './App.css';
+import Api from '../../Api/Api';
+import '../../App.css';
 
-function App() {
+const JoltTransform = (props) => {
   const [result, setResult] = useState('');
   const [jsonInputValid, setJsonInputValid] = useState(false);
   const [jsonInput, setJsonInput] = useState('');
@@ -19,12 +19,12 @@ function App() {
       joltSpecValid &&
       jsonInput.length > 0 &&
       joltSpec.length > 0;
-    console.log({
-      jsonInputValid,
-      joltSpecValid,
-      jsonInput,
-      joltSpec,
-    });
+    // console.log({
+    //   jsonInputValid,
+    //   joltSpecValid,
+    //   jsonInput,
+    //   joltSpec
+    // });
     return res;
   };
 
@@ -45,9 +45,9 @@ function App() {
     const res = await Api.joltTransform(data);
     setResult(JSON.stringify(res, undefined, 2));
   };
-
+  const display = !props.display ? { display: 'none' } : {};
   return (
-    <Fragment>
+    <div style={display}>
       <div className="jolt-header">
         <h1>Jolt Transform</h1>
         <button disabled={!isValid()} onClick={onTransform}>
@@ -86,8 +86,9 @@ function App() {
           />
         </div>
         <div className="jsoncard">
-          <h3>Transformation Result</h3>
-          <AceEditor className="jsoncardace"
+          <h3>Result</h3>
+          <AceEditor
+            className="jsoncardace"
             mode="json"
             height="93%"
             width="100%"
@@ -97,8 +98,8 @@ function App() {
           />
         </div>
       </div>
-    </Fragment>
+    </div>
   );
-}
+};
 
-export default App;
+export default JoltTransform;

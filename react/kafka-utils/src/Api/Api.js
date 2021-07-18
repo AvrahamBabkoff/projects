@@ -7,38 +7,13 @@ const ResponseType = {
   TEXT: 'text',
 };
 
-// const postApi = async (uri, data, action, parameters) => {
-//   let retVal = false;
-//   const params = parameters ? '?' + new URLSearchParams(parameters) : '';
-//   try {
-//     const response = await fetch(
-//       'http://localhost:9876/kafka/' + uri + params,
-//       {
-//         method: 'POST',
-//         headers: {
-//           'Content-Type': 'application/json',
-//         },
-//         body: JSON.stringify(data),
-//       }
-//     );
-//     if (!response.ok) {
-//       throw new Error(response.statusText);
-//     } else {
-//       retVal = true;
-//     }
-//   } catch (e) {
-//     await swal('Failed to ' + action, e.message, 'error');
-//   }
-//   return retVal;
-
-// };
 
 const postApi = async (responseType, uri, data, action, parameters) => {
   let retVal;
   const params = parameters ? '?' + new URLSearchParams(parameters) : '';
   try {
     const response = await fetch(
-      'http://localhost:9876/kafka/' + uri + params,
+      uri + params,
       {
         method: 'POST',
         headers: {
@@ -78,7 +53,7 @@ const fetchTopics = async (btstrpsrv) => {
       bootstrapServer: btstrpsrv,
     });
     const response = await fetch(
-      'http://localhost:9876/kafka/topics?' + params
+      'kafka-utils/kafka//topics?' + params
     );
     if (!response.ok) {
       throw new Error(response.statusText + '. Check host and port');
@@ -94,18 +69,18 @@ const fetchTopics = async (btstrpsrv) => {
 const invalidateTopic = async (data) => {
   return await postApi(
     ResponseType.RESULT,
-    'topics/invalidate',
+    'kafka-utils/kafka/topics/invalidate',
     data,
     'invalidate topic'
   );
 };
 
 const createTopic = async (data) => {
-  return await postApi(ResponseType.RESULT, 'topics', data, 'create topic');
+  return await postApi(ResponseType.RESULT, 'kafka-utils/kafka/topics', data, 'create topic');
 };
 
 const produce = async (data) => {
-  return await postApi(ResponseType.RESULT, 'produce', data, 'produce message');
+  return await postApi(ResponseType.RESULT, 'kafka-utils/kafka/produce', data, 'produce message');
 };
 
 // currently we send control data as query params, need to make it part of the body
@@ -113,7 +88,7 @@ const produceFile = async (parameters, data, multiLine) => {
   const uri = multiLine ? 'multiLineFile/produce' : 'file/produce';
   return await postApi(
     ResponseType.RESULT,
-    uri,
+    'kafka-utils/kafka/' + uri,
     data,
     'produce file',
     parameters
@@ -125,7 +100,7 @@ const consume = async (data, asFile) => {
   const resType = asFile ? ResponseType.BLOB : ResponseType.JSON;
   return await postApi(
     resType,
-    uri,
+    'kafka-utils/kafka/' + uri,
     data,
     'consume from topic ' + data.topicName
   );
@@ -134,7 +109,7 @@ const consume = async (data, asFile) => {
 const consumeMultiple = async (data) => {
   return await postApi(
     ResponseType.JSON,
-    'consume/multiple',
+    'kafka-utils/kafka/consume/multiple',
     data,
     'consume from multiple topics ' + data.topicsNames.toString()
   );
@@ -143,7 +118,7 @@ const consumeMultiple = async (data) => {
 const produceToEs = async (data) => {
   return await postApi(
     ResponseType.TEXT,
-    'topics/es',
+    'kafka-utils/kafka/topics/es',
     data,
     'produce topic ' + data.topicName.toString() + ' to es'
   );
@@ -154,7 +129,7 @@ const diffTopics = async (data, asFile) => {
   const resType = asFile ? ResponseType.BLOB : ResponseType.JSON;
   return await postApi(
     resType,
-    uri,
+    'kafka-utils/kafka/' + uri,
     data,
     'compare topics ' + data.topicNameIn + ' and ' + data.topicNameOut
   );
@@ -164,9 +139,18 @@ const diffTopics = async (data, asFile) => {
 const topicOffsets = async (data) => {
   return await postApi(
     ResponseType.JSON,
-    'topics/offset',
+    'kafka-utils/kafka/topics/offset',
     data,
     'topic offsets for ' + data.topicName
+  );
+};
+
+const joltTransform = async (data) => {
+  return await postApi(
+    ResponseType.JSON,
+    'jolt-utils/jolt/transform',
+    data,
+    'jolt transform'
   );
 };
 
@@ -181,7 +165,8 @@ const Api = {
   consumeMultiple,
   produceToEs,
   diffTopics,
-  topicOffsets
+  topicOffsets,
+  joltTransform
 };
 
 export default Api;

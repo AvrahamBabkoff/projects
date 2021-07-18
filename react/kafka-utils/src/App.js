@@ -2,6 +2,7 @@ import React, { Fragment, useState } from 'react';
 import swal from 'sweetalert';
 import Api from './Api/Api';
 import KafkaUtils from './components/kafka/KafkaUtils';
+import JoltTransform from './components/JoltTransform/JoltTransform';
 
 import './App.css';
 
@@ -54,6 +55,7 @@ function App() {
           ☰
         </button>
         <KafkaUtils display={activeApp === APPLICATION.KAFKA_UTILS} />
+        <JoltTransform display={activeApp === APPLICATION.JOLT_UTILS}/>
       </div>
     </Fragment>
   );

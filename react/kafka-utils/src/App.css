@@ -75,7 +75,7 @@ body {
   display: block;
 }
 
-H3 {
+h3 {
   text-align: center;
   font-size: 50px;
 }
@@ -639,7 +639,7 @@ H2 {
 .sidebar a, .sidebar button{
   padding: 8px 8px 8px 32px;
   text-decoration: none;
-  font-size: 25px;
+  font-size: 20px;
   color: #818181;
   display: block;
   transition: 0.3s;
@@ -682,4 +682,32 @@ H2 {
 @media screen and (max-height: 450px) {
   .sidebar {padding-top: 15px;}
   .sidebar a {font-size: 18px;}
+}
+
+.jolt-header {
+  display: inline-block;
+  text-align: center;
+  width: 100%;
+}
+
+.jolt {
+  width: 100%;
+  height: 90vh;
+}
+
+.jsoncard {
+  width: 30%;
+  height: 85%;
+  float: left;
+  margin: 10px;
+}
+
+.jsoncard h3 {
+  text-align: center;
+  font-size: medium;
+}
+
+.jsoncardace {
+  border-style: solid;
+  border-width: thin;
 }
